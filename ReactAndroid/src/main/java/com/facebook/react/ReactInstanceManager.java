@@ -1070,6 +1070,7 @@ public class ReactInstanceManager {
   /**
    * @return instance of {@link ReactContext} configured a {@link CatalystInstance} set
    */
+//  新版在new的线程中调用此方法,老版本的使用AsyncTask创建,异步创建CatalystInstance和ReactInstanceManager
   private ReactApplicationContext createReactContext(
       JavaScriptExecutor jsExecutor,
       JSBundleLoader jsBundleLoader) {
@@ -1086,9 +1087,9 @@ public class ReactInstanceManager {
 
     CatalystInstanceImpl.Builder catalystInstanceBuilder = new CatalystInstanceImpl.Builder()
       .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
-      .setJSExecutor(jsExecutor)
-      .setRegistry(nativeModuleRegistry)
-      .setJSBundleLoader(jsBundleLoader)
+      .setJSExecutor(jsExecutor)//js执行引擎
+      .setRegistry(nativeModuleRegistry)//java的本地模块
+      .setJSBundleLoader(jsBundleLoader)//js文件打包成的bundle文件
       .setNativeModuleCallExceptionHandler(exceptionHandler);
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
@@ -1109,16 +1110,20 @@ public class ReactInstanceManager {
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
+//    通过CatalystInstance设置Js的全局变量属性
     if (Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
     }
     ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);
+//    加载JSBundle文件
     catalystInstance.runJSBundle();
+//    初始化ReactContext中的三个运行队列 UIQueue NativeQueue 和 JSQueue
     reactContext.initializeWithInstance(catalystInstance);
 
     return reactContext;
   }
 
+//  创建ReactContext的时候处理MainReactPackage中注册Module依赖关系
   private NativeModuleRegistry processPackages(
     ReactApplicationContext reactContext,
     List<ReactPackage> packages,

@@ -487,6 +487,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   /**
    * Calls the default entry point into JS which is AppRegistry.runApplication()
    */
+//  rootView通过该处调用进入JS进行JSModule的装载　装载ReactActivity指定的Component
   private void defaultJSEntryPoint() {
       Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
       try {

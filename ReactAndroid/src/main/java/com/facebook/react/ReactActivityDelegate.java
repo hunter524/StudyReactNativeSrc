@@ -78,7 +78,7 @@ public class ReactActivityDelegate {
     }
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
   }
-
+//创建ReactRootView => Activity装载ReactRootView => 并且启动去装载JS模块
   protected void loadApp(String appKey) {
     if (mReactRootView != null) {
       throw new IllegalStateException("Cannot loadApp while app is already running.");

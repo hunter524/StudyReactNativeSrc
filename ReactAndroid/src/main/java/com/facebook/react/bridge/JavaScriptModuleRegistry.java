@@ -91,6 +91,7 @@ public final class JavaScriptModuleRegistry {
       NativeArray jsArgs = args != null
         ? Arguments.fromJavaArgs(args)
         : new WritableNativeArray();
+//      JS暴露给JAVA调用的Module在JAVA层的映射通过动态代理直接调入JS层进行JS代码的引用
       mCatalystInstance.callFunction(getJSModuleName(), method.getName(), jsArgs);
       return null;
     }

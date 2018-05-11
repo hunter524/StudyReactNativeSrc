@@ -27,6 +27,37 @@ import com.facebook.react.uimanager.UIImplementationProvider;
  * Simple class that holds an instance of {@link ReactInstanceManager}. This can be used in your
  * {@link Application class} (see {@link ReactApplication}), or as a static field.
  */
+//App层持有 和 创建ReactNativeHost 通常一个App只有一个ReactNativeHost(RN主机)
+// ReactNativeHost内部持有:ReactInstanceManager管理
+
+// ReactInstanceManager内部持有:ReactContext 和 ReactRootView 负责管理ReactRootView的生命周期,JS文件等的基础配置工作,负责ReactContext和CatalystInstance的构建
+// 持有List<ViewManager>
+
+// ReactContext内部持有:CatalystInstance,UI JS Native代码执行的工作队列 负责包装Application或者Activity构建成RN执行的上下文环境,
+//  透传Runnable等进入相应的执行队列进行执行
+
+// CatalystInstance实现为CatalystInstanceImpl: 持有:NativeModuleRegistry(java模块) JavaScriptModuleRegistry(JS模块)
+//  负责协调JS <---> C++(JS执行引擎) <---> JAVA 三方执行的交互
+
+//  NativeModuleRegistry:JAVA提供给JS调用的模块的持有者
+//  JavaScriptModuleRegistry:JS提供给JAVA调用的模块的持有者,实际JAVA层是通过动态代理放射进行JAVA层向JS层的调用
+//  ViewManager:各种自定义View的管理类,负责JSView到native View的映射
+
+//  ReactRootView视图渲染流程:
+//  ReactActivity(指定Component Name 创建ReactRootView,加载进入自己的ContentView 初始化基础设施)=>ReactRootView#defaultJSEntryPoint调用进入JS查找指定的Component并启动JS代码=>
+
+//  CoreModulesPackage:
+// 则为ReactNativeModule的核心组件
+
+//  UIManagerModule:JS和NativeView交互的核心类.其由CoreModulesPackage负责提供,但是不持有List<ViewManager>转而交由ReactInstanceManager持有,同时也负责创建
+//  UIImplementation,将List<ViewManager>间接的交由UIImplementation持有,UIManagerModule持有UIImplementation,同时将JS调用的和View相关的工作委托给Implementation进行实现.
+
+
+
+// todo: 理论上是否可以通过改写ReactActivityDelegate使其可以应用在单个Fragment中,但是也无法做到一个Activity中的多个Fragment同时使用ReactNative进行实现
+// todo: 因为从目前ReactInstance的源码看同时只支持一个正在运行的ReactActivity实例 但是可以考虑将ReactInstanceManager的生命周期与Fragment无关,而直接与容纳Fragment的Activity相关
+//  todo: 可以支持一个Activity由 多RN渲染的Fragment构成?
+// todo: 参考:https://github.com/hudl/react-native-android-fragment 尝试实现一个Activity多Fragment的实例
 public abstract class ReactNativeHost {
 
   private final Application mApplication;

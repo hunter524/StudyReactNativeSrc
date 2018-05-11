@@ -15,6 +15,7 @@ import com.facebook.react.common.DebugServerException;
  * A class that stores JS bundle information and allows {@link CatalystInstance} to load a correct
  * bundle through {@link ReactBridge}.
  */
+//JS Bundle文件的加载类 Android Assets目录 从普通的文件File目录下面加载 FileCache目录加载 Debug模式下远端服务器加载 Debug模式下Dealt增量加载
 public abstract class JSBundleLoader {
 
   /**
@@ -118,5 +119,6 @@ public abstract class JSBundleLoader {
   }
 
   /** Loads the script, returning the URL of the source it loaded. */
+//  最后的loadBundle的操作均是交由Native方法进行实现的
   public abstract String loadScript(CatalystInstanceImpl instance);
 }
